@@ -1,0 +1,35 @@
+resources:
+  jobs:
+    New_Job_Mar_27_2026_12_20_PM:
+      name: New Job Mar 27, 2026, 12:20 PM
+      trigger:
+        pause_status: UNPAUSED
+        periodic:
+          interval: 5
+          unit: DAYS
+      tasks:
+        - task_key: data_ingestion
+          notebook_task:
+            notebook_path: /Workspace/Users/aakamahalakshmi@gmail.com/automobile_repair_databricks_project/automobile_repair_plateform/01_bronze/data_ingestion
+            source: WORKSPACE
+        - task_key: data_cleaning
+          depends_on:
+            - task_key: data_ingestion
+          notebook_task:
+            notebook_path: /Workspace/Users/aakamahalakshmi@gmail.com/automobile_repair_databricks_project/automobile_repair_plateform/02_silver/data_cleaning
+            source: WORKSPACE
+        - task_key: fact_dim_table_creation
+          depends_on:
+            - task_key: data_cleaning
+          notebook_task:
+            notebook_path: /Workspace/Users/aakamahalakshmi@gmail.com/automobile_repair_databricks_project/automobile_repair_plateform/03_gold/fact_dim_table
+            source: WORKSPACE
+        - task_key: kpis
+          depends_on:
+            - task_key: fact_dim_table_creation
+          notebook_task:
+            notebook_path: /Workspace/Users/aakamahalakshmi@gmail.com/automobile_repair_databricks_project/automobile_repair_plateform/03_gold/kpi
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
